@@ -47,43 +47,23 @@ class ProgressiveMauve(AlignToolBase):
     @classmethod
     def get_tool_name(cls) -> str:
         """Tool name"""
-        return "progressiveMauve"
+        pass
 
     @classmethod
     def get_binary_names(cls) -> list[str]:
         """Binary names"""
-        return ["progressiveMauve"]
+        pass
 
     @classmethod
     def get_version(cls) -> str:
         """Tool version"""
-        return UNKNOWN_VERSION  # No version found in progressiveMauve
+        pass
 
     @property
     def name2seqlen(self) -> dict[str, int]:
         """Name & sequence length dict"""
-        name2seqlen = {}
-        for seq in self._seqs:
-            name2seqlen[seq.name] = sum(list(seq.get_seqid2size().values()))
-        return name2seqlen
+        pass
 
     def run(self) -> list[AlignCoord]:
         """Run genome alignment"""
-        with TemporaryDirectory() as tmpdir:
-            outdir = self._outdir if self._outdir else tmpdir
-            outdir = Path(outdir)
-            os.makedirs(outdir, exist_ok=True)
-            genome_files: list[Path] = self._write_genome_files(self._seqs, outdir)
-
-            # Run progressiveMauve
-            xmfa_file = outdir / "pmauve.xmfa"
-            bbone_file = outdir / "pmauve_bbone.tsv"
-            logger.info(f"{'=' * 10} Start progressiveMauve Alignment {'=' * 10}")
-            cmd = f"progressiveMauve --output={xmfa_file} --backbone-output={bbone_file} {' '.join(map(str, genome_files))}"  # noqa: E501
-            if self._cmd_opts:
-                cmd = f"{cmd} {self._cmd_opts}"
-            self.run_cmd(cmd)
-            logger.info(f"{'=' * 10} Finish progressiveMauve Alignment {'=' * 10}")
-
-            names = [file.stem for file in genome_files]
-            return AlignCoord.parse_pmauve_file(bbone_file, names, self._refid)
+        pass

@@ -48,22 +48,22 @@ class LinkTrack(Track):
     @property
     def upper_feature_track(self) -> FeatureTrack:
         """Upper feature track"""
-        return self._upper_feature_track
+        pass
 
     @property
     def lower_feature_track(self) -> FeatureTrack:
         """Lower feature track"""
-        return self._lower_feature_track
+        pass
 
     @property
     def link_record_list(self) -> list[LinkRecord]:
         """Link record list"""
-        return self._link_record_list
+        pass
 
     @property
     def gid2link_dict(self) -> dict[str, dict[str, Any]]:
         """gid & link dict"""
-        return self._gid2link_dict
+        pass
 
     def add_link(
         self,
@@ -105,28 +105,7 @@ class LinkTrack(Track):
             Patch properties (e.g. `ec="black", lw=0.5, hatch="//", ...`)
             <https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Patch.html>
         """
-        # Check link position is within segment range
-        if not upper_seg.is_within_range((upper_start, upper_end)):
-            raise LinkRangeError(f"{upper_start=}, {upper_end=} is invalid ({upper_seg})")  # fmt: skip  # noqa: E501
-        if not lower_seg.is_within_range((lower_start, lower_end)):
-            raise LinkRangeError(f"{lower_start=}, {lower_end=} is invalid ({lower_seg})")  # fmt: skip  # noqa: E501
-
-        link_record = LinkRecord(
-            track1=self.upper_feature_track,
-            seg1=upper_seg,
-            start1=upper_start,
-            end1=upper_end,
-            track2=self.lower_feature_track,
-            seg2=lower_seg,
-            start2=lower_start,
-            end2=lower_end,
-            v=v,
-            ylim=(self.ylim[0] * size, self.ylim[1] * size),
-            curve=curve,
-            patch_kws=kwargs,
-        )
-        self._link_record_list.append(link_record)
-        self._gid2link_dict[link_record.gid] = link_record.to_dict()
+        pass
 
     def plot_links(self, fast_render: bool = True) -> None:
         """Plot links
@@ -136,8 +115,7 @@ class LinkTrack(Track):
         fast_render : bool, optional
             Enable fast rendering using PatchCollection plot style.
         """
-        patches: list[Patch] = [record.to_patch() for record in self.link_record_list]
-        plot_patches(patches, self.ax, fast_render)
+        pass
 
 
 @dataclass
@@ -162,17 +140,17 @@ class LinkRecord:
     @property
     def gid(self) -> str:
         """Group ID"""
-        return self._gid
+        pass
 
     @property
     def length1(self) -> int:
         """Length1"""
-        return max(self.start1, self.end1) - min(self.start1, self.end1)
+        pass
 
     @property
     def length2(self) -> int:
         """Length2"""
-        return max(self.start2, self.end2) - min(self.start2, self.end2)
+        pass
 
     def to_patch(self) -> Link:
         """Convert to link patch
@@ -182,18 +160,7 @@ class LinkRecord:
         link_patch : Link
             Link patch
         """
-        self.patch_kws = {} if self.patch_kws is None else deepcopy(self.patch_kws)
-        self.patch_kws.update(gid=self.gid)
-
-        return Link(
-            start1=self.seg1.transform_coord(self.start1),
-            end1=self.seg1.transform_coord(self.end1),
-            start2=self.seg2.transform_coord(self.start2),
-            end2=self.seg2.transform_coord(self.end2),
-            ylim=self.ylim,
-            curve=self.curve,
-            **self.patch_kws,
-        )
+        pass
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dict for tooltip display
@@ -203,16 +170,4 @@ class LinkRecord:
         link_dict : dict[str, Any]
             link dict
         """
-        return dict(
-            track1=self.track1.name,
-            track2=self.track2.name,
-            segment1=self.seg1.name,
-            segment2=self.seg2.name,
-            start1=self.start1,
-            start2=self.start2,
-            end1=self.end1,
-            end2=self.end2,
-            length1=self.length1,
-            length2=self.length2,
-            identity=self.v if self.v else "na",
-        )
+        pass

@@ -30,8 +30,7 @@ CLI_NAME = "pgv-pmauve"
 @exit_handler
 def main():
     """Main function called from CLI"""
-    args = get_args()
-    run(**args.__dict__)
+    pass
 
 
 @logging_timeit
@@ -61,86 +60,7 @@ def run(
     block_cmap: str,
 ):
     """Run genome visualization workflow"""
-    log_params = locals()
-
-    # Make output directory
-    outdir = Path(outdir)
-    os.makedirs(outdir, exist_ok=True)
-
-    # Set logger
-    log_file = outdir / LOG_FILENAME
-    init_logger(quiet=quiet, log_file=log_file)
-    logger = logging.getLogger(__name__)
-    log_basic_env_info(CLI_NAME, log_params)
-
-    # Run progressiveMauve alignment
-    align_coords_file = outdir / ALIGN_COORDS_FILENAME
-    pmauve = ProgressiveMauve(
-        seqs,
-        outdir=outdir / "tmp" if debug else None,
-        refid=refid,
-    )
-    if reuse and align_coords_file.exists():
-        logger.info(f"Reuse alignment result in '{align_coords_file}'")
-        align_coords = AlignCoord.read(align_coords_file)
-    else:
-        align_coords = pmauve.run()
-        logger.info(f"Write alignment result to '{align_coords_file}'")
-        AlignCoord.write(align_coords, align_coords_file)
-
-    # Setup synteny blocks
-    name2blocks: dict[str, list[tuple[int, int, int]]] = defaultdict(list)
-    for ac in align_coords:
-        if ac.query_block not in name2blocks[ac.query_name]:
-            name2blocks[ac.query_name].append(ac.query_block)
-        if ac.ref_block not in name2blocks[ac.ref_name]:
-            name2blocks[ac.ref_name].append(ac.ref_block)
-
-    # Create GenomeViz instance
-    gv = GenomeViz(
-        fig_width=fig_width,
-        fig_track_height=fig_track_height,
-        track_align_type=track_align_type,
-        feature_track_ratio=feature_track_ratio,
-    )
-    if show_scale_bar:
-        gv.set_scale_bar(labelsize=scale_labelsize)
-    if show_scale_xticks:
-        gv.set_scale_xticks(labelsize=scale_labelsize)
-
-    ColorCycler.set_cmap(block_cmap)
-    for name, seqlen in pmauve.name2seqlen.items():
-        # Add track
-        track = gv.add_feature_track(
-            name,
-            {name: seqlen},
-            labelsize=track_labelsize,
-        )
-        # Add synteny blocks
-        blocks = name2blocks[name]
-        colors = ColorCycler.get_color_list(len(blocks))
-        for block, color in zip(blocks, colors):
-            track.add_feature(*block, plotstyle=block_plotstyle, fc=color)
-
-    # Plot links
-    for ac in align_coords:
-        gv.add_link(
-            ac.query_link,
-            ac.ref_link,
-            curve=curve,
-            color=normal_link_color,
-            inverted_color=inverted_link_color,
-        )
-
-    # Output result image file
-    for format in formats:
-        output_file = outdir / f"result.{format}"
-        logger.info(f"Plotting {format.upper()} format result...")
-        if format == "html":
-            gv.savefig_html(output_file)
-        else:
-            gv.savefig(output_file, dpi=dpi)
-        logger.info(f"Output result image file '{output_file}'")
+    pass
 
 
 def get_args() -> argparse.Namespace:
@@ -151,20 +71,7 @@ def get_args() -> argparse.Namespace:
     args : argparse.Namespace
         Argument parameters
     """
-    parser = argparse.ArgumentParser(
-        description="pyGenomeViz CLI workflow using progressiveMauve",
-        usage=f"{CLI_NAME} [options] seq1.gbk seq2.gbk seq3.gbk -o outdir",
-        epilog="[*] marker means the default value.",
-        add_help=False,
-        allow_abbrev=False,
-        formatter_class=CustomHelpFormatter,
-    )
-    setup_argparser(parser, CLI_NAME)
-
-    args = parser.parse_args()
-    validate_args(args, parser)
-
-    return args
+    pass
 
 
 if __name__ == "__main__":

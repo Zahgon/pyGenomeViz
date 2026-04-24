@@ -55,54 +55,47 @@ class FeatureSegment:
     @property
     def name(self) -> str:
         """Segment name"""
-        return self._name
+        pass
 
     @property
     def start(self) -> int:
         """Segment start position"""
-        return self._start
+        pass
 
     @property
     def end(self) -> int:
         """Segment end position"""
-        return self._end
+        pass
 
     @property
     def range(self) -> tuple[int, int]:
         """Segment (start, end) range"""
-        return (self.start, self.end)
+        pass
 
     @property
     def size(self) -> int:
         """Segment size"""
-        return self.end - self.start
+        pass
 
     @property
     def feature_track(self) -> FeatureTrack:
         """Parent feature track"""
-        return self._feature_track
+        pass
 
     @property
     def track_start(self) -> int:
         """Segment start position in track"""
-        pos = 0
-        for idx, segment in enumerate(self.feature_track.segments):
-            start_pos = pos + self.feature_track.offset
-            if segment.name == self.name:
-                break
-            if idx < len(self.feature_track.segments) - 1:
-                pos += segment.size + self.feature_track.spaces[idx]
-        return start_pos  # type: ignore
+        pass
 
     @property
     def track_end(self) -> int:
         """Segment end position in track"""
-        return self.track_start + self.size
+        pass
 
     @property
     def gid2feature_dict(self) -> dict[str, dict[str, Any]]:
         """gid & feature dict (Sort by start coordinate)"""
-        return dict(sorted(self._gid2feature_dict.items(), key=lambda v: v[1]["start"]))
+        pass
 
     @property
     def transform_features(self) -> list[SeqFeature]:
@@ -110,7 +103,7 @@ class FeatureSegment:
 
         Segment-level coordinate is transformed to track-level coordinate.
         """
-        return list(map(self._transform_feature, self._features))
+        pass
 
     @property
     def transform_exon_features(self) -> list[SeqFeature]:
@@ -118,17 +111,12 @@ class FeatureSegment:
 
         Segment-level coordinate is transformed to track-level coordinate.
         """
-        return list(map(self._transform_feature, self._exon_features))
+        pass
 
     @property
     def transform_text_kws_list(self) -> list[dict[str, Any]]:
         """Coordinate transformed text keywords list"""
-        plot_text_kws_list: list[dict[str, Any]] = []
-        for text_kws in self._text_kws_list:
-            plot_text_kws = deepcopy(text_kws)
-            plot_text_kws["x"] = self.transform_coord(plot_text_kws["x"])
-            plot_text_kws_list.append(plot_text_kws)
-        return plot_text_kws_list
+        pass
 
     ############################################################
     # Public Method
@@ -136,11 +124,7 @@ class FeatureSegment:
 
     def is_within_range(self, pos: int | tuple[int, int]) -> bool:
         """Check target pos is within segment range"""
-        if isinstance(pos, int):
-            return self.start <= pos <= self.end
-        else:
-            min_pos, max_pos = min(pos), max(pos)
-            return self.start <= min_pos <= max_pos <= self.end
+        pass
 
     @overload
     def transform_coord(self, x: int) -> int: ...
@@ -164,17 +148,7 @@ class FeatureSegment:
         track_coord : int | float | NDArray[np.float64]
             Track level coordinate(s)
         """
-        offset = self.track_start - self.start
-        err_msg = f"{x=} is outside the segment range ({self})"
-        if isinstance(x, (int, float)):
-            if not self.start <= x <= self.end:
-                raise ValueError(err_msg)
-            return x + offset
-        else:
-            x = np.array(x)
-            if np.any(x < self.start) or np.any(x > self.end):  # type: ignore
-                raise ValueError(err_msg)
-            return (np.array(x) + offset).astype(np.float64)
+        pass
 
     def add_text(
         self,
@@ -210,30 +184,7 @@ class FeatureSegment:
             Text properties (e.g. `color="red", ...`)
             <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.text.html>
         """
-        # Ignore if text content is blank or size <= 0
-        if text == "" or size <= 0:
-            return
-
-        # Check x coordinate is valid or not
-        if not self.start <= x <= self.end:
-            raise ValueError(f"{x=} is invalid ({self.start=}, {self.end})")
-
-        vpos2y = dict(top=1 + ymargin, center=0, bottom=-(1 + ymargin))
-        vpos2va = dict(top="bottom", center="center", bottom="top")
-        hpos2ha = dict(left="left", center="center", right="right")
-
-        text_kws = dict(
-            x=x,
-            y=vpos2y[vpos],
-            s=text,
-            size=size,
-            va=vpos2va[vpos],
-            ha=hpos2ha[hpos],
-            rotation=rotation,
-            rotation_mode="anchor",
-            **kwargs,
-        )
-        self._text_kws_list.append(text_kws)
+        pass
 
     def add_sublabel(
         self,
@@ -262,32 +213,7 @@ class FeatureSegment:
         **kwargs : dict, optional
             `segment.add_text()` method keyword arguments (e.g. `color="red", ...`)
         """
-        # Check pos is valid or not
-        vpos, hpos = pos.split("-")
-        vpos_types, hpos_types = ("top", "bottom"), ("left", "center", "right")
-        if vpos not in vpos_types or hpos not in hpos_types:
-            raise ValueError(f"{pos=} is invalid pattern. Position must be '[top|bottom]-[left|center|right]'")  # fmt: skip  # noqa: E501
-
-        # Set default sublabel text
-        if text is None:
-            text = f"{self.start:,} - {self.end:,} bp"
-
-        hpos2x = dict(
-            left=self.start,
-            center=(self.start + self.end) / 2,
-            right=self.end,
-        )
-
-        self.add_text(
-            hpos2x[hpos],
-            text,
-            size=size,
-            vpos=vpos,  # type: ignore
-            hpos=hpos,  # type: ignore
-            ymargin=ymargin,
-            rotation=rotation,
-            **kwargs,
-        )
+        pass
 
     def add_feature(
         self,
@@ -327,21 +253,7 @@ class FeatureSegment:
             Patch properties (e.g. `fc="red", lw=0.5, hatch="//", ...`)
             <https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Patch.html>
         """
-        text_kws = {} if text_kws is None else deepcopy(text_kws)
-
-        # Plot feature
-        feature = SeqFeature(SimpleLocation(start, end, strand))
-        self.add_features(
-            feature,
-            plotstyle=plotstyle,
-            arrow_shaft_ratio=arrow_shaft_ratio,
-            extra_tooltip=extra_tooltip,
-            **kwargs,
-        )
-
-        # Plot text
-        label_pos = (start + end) / 2
-        self.add_text(label_pos, label, **text_kws)
+        pass
 
     def add_features(
         self,
@@ -383,45 +295,7 @@ class FeatureSegment:
             Patch properties (e.g. `fc="red", lw=0.5, hatch="//", ...`)
             <https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Patch.html>
         """
-        text_kws = {} if text_kws is None else deepcopy(text_kws)
-
-        # Set default label handler
-        def default_label_handler(label: str) -> str:
-            return "" if "hypothetical" in label.lower() else label
-
-        if label_handler is None:
-            label_handler = default_label_handler
-
-        if isinstance(features, SeqFeature):
-            features = [features]
-
-        for feature in features:
-            try:
-                # Check feature is within segment range
-                self._check_feature_within_segment(feature)
-            except FeatureRangeError:
-                if ignore_outside_range:
-                    continue
-                else:
-                    raise
-
-            # Update feature qualifiers for feature patch plot
-            gid = f"Feature-{uuid.uuid4().hex}"
-            kwargs.update(gid=gid)
-            self._add_gid2feature_dict(gid, feature, extra_tooltip)
-            feature.qualifiers.update(
-                plotstyle=plotstyle,
-                arrow_shaft_ratio=arrow_shaft_ratio,
-                patch_kws=deepcopy(kwargs),
-            )
-            self._features.append(feature)
-
-            # Plot feature label
-            label = feature.qualifiers.get(label_type, [""])[0]
-            label = label_handler(label)
-            start, end = int(feature.location.start), int(feature.location.end)  # type: ignore
-            label_pos = (start + end) / 2
-            self.add_text(label_pos, label, **text_kws)
+        pass
 
     def add_exon_feature(
         self,
@@ -459,27 +333,7 @@ class FeatureSegment:
             `segment.add_text()` method keyword arguments
             (e.g. `dict(size=12, color="red", ...)`)
         """
-        text_kws = {} if text_kws is None else deepcopy(text_kws)
-
-        # Plot exon feature
-        if len(locs) == 1:
-            start, end = locs[0]
-            feature = SeqFeature(SimpleLocation(start, end, strand))
-        else:
-            feature_locs = [SimpleLocation(*loc, strand) for loc in locs]
-            feature = SeqFeature(CompoundLocation(feature_locs))
-        self.add_exon_features(
-            feature,
-            plotstyle=plotstyle,
-            arrow_shaft_ratio=arrow_shaft_ratio,
-            patch_kws=patch_kws,
-            intron_patch_kws=intron_patch_kws,
-        )
-
-        # Plot text
-        start, end = int(feature.location.start), int(feature.location.end)  # type: ignore
-        label_pos = (start + end) / 2
-        self.add_text(label_pos, label, **text_kws)
+        pass
 
     def add_exon_features(
         self,
@@ -525,48 +379,7 @@ class FeatureSegment:
             `segment.add_text()` method keyword arguments
             (e.g. `dict(size=12, color="red", ...)`)
         """
-        patch_kws = {} if patch_kws is None else deepcopy(patch_kws)
-        intron_patch_kws = {} if intron_patch_kws is None else intron_patch_kws
-        text_kws = {} if text_kws is None else deepcopy(text_kws)
-
-        # Set default label handler
-        def default_label_handler(label: str) -> str:
-            return "" if "hypothetical" in label.lower() else label
-
-        if label_handler is None:
-            label_handler = default_label_handler
-
-        if isinstance(features, SeqFeature):
-            features = [features]
-
-        for feature in features:
-            try:
-                # Check feature is within segment range
-                self._check_feature_within_segment(feature)
-            except FeatureRangeError:
-                if ignore_outside_range:
-                    continue
-                else:
-                    raise
-
-            # Update feature qualifiers for feature patch plot
-            gid = f"Feature-{uuid.uuid4().hex}"
-            patch_kws.update(gid=gid)
-            self._add_gid2feature_dict(gid, feature, extra_tooltip)
-            feature.qualifiers.update(
-                plotstyle=plotstyle,
-                arrow_shaft_ratio=arrow_shaft_ratio,
-                patch_kws=deepcopy(patch_kws),
-                intron_patch_kws=intron_patch_kws,
-            )
-            self._exon_features.append(feature)
-
-            # Plot feature label
-            label = feature.qualifiers.get(label_type, [""])[0]
-            label = label_handler(label)
-            start, end = int(feature.location.start), int(feature.location.end)  # type: ignore
-            label_pos = (start + end) / 2
-            self.add_text(label_pos, label, **text_kws)
+        pass
 
     ############################################################
     # Private Method
@@ -585,11 +398,7 @@ class FeatureSegment:
         FeatureOutsideRangeError
             feature is not within segment range
         """
-        start, end = int(feature.location.start), int(feature.location.end)  # type: ignore
-        if not self.start <= start <= end <= self.end:
-            feature_location = str(feature.location)
-            segment_range = f"{self.start} - {self.end}"
-            raise FeatureRangeError(f"{feature_location=} is invalid ({segment_range=})")  # fmt: skip  # noqa: E501
+        pass
 
     def _transform_feature(self, feature: SeqFeature) -> SeqFeature:
         """Transform segment-level feature coordinate to track-level
@@ -604,17 +413,7 @@ class FeatureSegment:
         feature : SeqFeature
             Transformaed feature
         """
-        locs: list[SimpleLocation] = []
-        for loc in feature.location.parts:
-            start = self.transform_coord(int(loc.start))  # type: ignore
-            end = self.transform_coord(int(loc.end))  # type: ignore
-            locs.append(SimpleLocation(start, end, loc.strand))
-        transform_feature = SeqFeature(
-            location=CompoundLocation(locs) if len(locs) >= 2 else locs[0],
-            type=feature.type,
-            qualifiers=deepcopy(feature.qualifiers),
-        )
-        return transform_feature
+        pass
 
     def _add_gid2feature_dict(
         self,
@@ -633,29 +432,7 @@ class FeatureSegment:
         extra_tooltip : dict[str, str] | None, optional
             Extra tooltip dict
         """
-        extra_tooltip = {} if extra_tooltip is None else deepcopy(extra_tooltip)
-
-        start, end = int(feature.location.start), int(feature.location.end)  # type: ignore
-        strand = "-" if feature.location.strand == -1 else "+"
-        location = f"{start:,} - {end:,} ({strand})"
-
-        self._gid2feature_dict[gid] = dict(
-            gid=gid,
-            track=self.feature_track.label,
-            segment=self.name,
-            start=start,
-            end=end,
-            strand=strand,
-            location=location,
-            length=end - start,
-            type="na" if feature.type == "" else feature.type,
-            gene=feature.qualifiers.get("gene", ["na"])[0],
-            protein_id=feature.qualifiers.get("protein_id", ["na"])[0],
-            product=feature.qualifiers.get("product", ["na"])[0],
-            pseudo="pseudo" in feature.qualifiers or "pseudogene" in feature.qualifiers,
-            translation=feature.qualifiers.get("translation", ["na"])[0],
-            extra=extra_tooltip,
-        )
+        pass
 
     def __str__(self):
         seg_name = self.name

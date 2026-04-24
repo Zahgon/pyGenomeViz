@@ -38,15 +38,7 @@ class FeatureConfig:
     @property
     def label_filter_func(self) -> Callable[[str], str]:
         """Label filter function (from label_filter_words)"""
-
-        def label_filter(label: str) -> str:
-            filter_words = self.label_filter_words + ["hypothetical"]
-            for filter_word in filter_words:
-                if filter_word.strip() in label:
-                    return ""
-            return label
-
-        return label_filter
+        pass
 
 
 @dataclass

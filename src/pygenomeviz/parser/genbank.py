@@ -65,32 +65,32 @@ class Genbank:
     @property
     def name(self) -> str:
         """Name"""
-        return self._name
+        pass
 
     @property
     def records(self) -> list[SeqRecord]:
         """Genbank records"""
-        return self._records
+        pass
 
     @property
     def genome_seq(self) -> str:
         """Genome sequence (only first record)"""
-        return str(self.records[0].seq)
+        pass
 
     @property
     def genome_length(self) -> int:
         """Genome length (only first record)"""
-        return len(self.genome_seq)
+        pass
 
     @property
     def full_genome_seq(self) -> str:
         """Full genome sequence (concatenate all records)"""
-        return "".join(str(r.seq) for r in self.records)
+        pass
 
     @property
     def full_genome_length(self) -> int:
         """Full genome length (concatenate all records)"""
-        return len(self.full_genome_seq)
+        pass
 
     ############################################################
     # Public Method
@@ -109,9 +109,7 @@ class Genbank:
         gc_content : float
             GC content
         """
-        seq = self.genome_seq if seq is None else seq
-        gc_content = SeqUtils.gc_fraction(seq) * 100
-        return gc_content
+        pass
 
     def calc_gc_skew(
         self,
@@ -138,34 +136,7 @@ class Genbank:
         gc_skew_list : NDArray[np.float64]
             GC skew list
         """
-        pos_list, gc_skew_list = [], []
-        seq = self.genome_seq if seq is None else seq
-        if window_size is None:
-            window_size = int(len(seq) / 500)
-        if step_size is None:
-            step_size = int(len(seq) / 1000)
-        if window_size == 0 or step_size == 0:
-            window_size, step_size = len(seq), int(len(seq) / 2)
-        pos_list = list(range(0, len(seq), step_size)) + [len(seq)]
-        for pos in pos_list:
-            window_start_pos = pos - int(window_size / 2)
-            window_end_pos = pos + int(window_size / 2)
-            window_start_pos = 0 if window_start_pos < 0 else window_start_pos
-            window_end_pos = len(seq) if window_end_pos > len(seq) else window_end_pos
-
-            subseq = seq[window_start_pos:window_end_pos]
-            g = subseq.count("G") + subseq.count("g")
-            c = subseq.count("C") + subseq.count("c")
-            try:
-                skew = (g - c) / float(g + c)
-            except ZeroDivisionError:
-                skew = 0.0
-            gc_skew_list.append(skew)
-
-        pos_list = np.array(pos_list).astype(np.int64)
-        gc_skew_list = np.array(gc_skew_list).astype(np.float64)
-
-        return pos_list, gc_skew_list
+        pass
 
     def calc_gc_content(
         self,
@@ -192,29 +163,7 @@ class Genbank:
         gc_content_list : NDArray[np.float64]
             GC content list
         """
-        pos_list, gc_content_list = [], []
-        seq = self.genome_seq if seq is None else seq
-        if window_size is None:
-            window_size = int(len(seq) / 500)
-        if step_size is None:
-            step_size = int(len(seq) / 1000)
-        if window_size == 0 or step_size == 0:
-            window_size, step_size = len(seq), int(len(seq) / 2)
-        pos_list = list(range(0, len(seq), step_size)) + [len(seq)]
-        for pos in pos_list:
-            window_start_pos = pos - int(window_size / 2)
-            window_end_pos = pos + int(window_size / 2)
-            window_start_pos = 0 if window_start_pos < 0 else window_start_pos
-            window_end_pos = len(seq) if window_end_pos > len(seq) else window_end_pos
-
-            subseq = seq[window_start_pos:window_end_pos]
-            gc_content = SeqUtils.gc_fraction(subseq) * 100
-            gc_content_list.append(gc_content)
-
-        pos_list = np.array(pos_list).astype(np.int64)
-        gc_content_list = np.array(gc_content_list).astype(np.float64)
-
-        return pos_list, gc_content_list
+        pass
 
     def get_seqid2seq(self) -> dict[str, str]:
         """Get seqid & complete/contig/scaffold genome sequence dict
@@ -224,7 +173,7 @@ class Genbank:
         seqid2seq : dict[str, str]
             seqid & genome sequence dict
         """
-        return {str(rec.id): str(rec.seq) for rec in self.records}
+        pass
 
     def get_seqid2size(self) -> dict[str, int]:
         """Get seqid & complete/contig/scaffold genome size dict
@@ -234,7 +183,7 @@ class Genbank:
         seqid2size : dict[str, int]
             seqid & genome size dict
         """
-        return {seqid: len(seq) for seqid, seq in self.get_seqid2seq().items()}
+        pass
 
     def get_seqid2features(
         self,
@@ -256,35 +205,7 @@ class Genbank:
         seqid2features : dict[str, list[SeqFeature]]
             seqid & features dict
         """
-        if isinstance(feature_type, str):
-            feature_type = [feature_type]
-
-        seqid2features = defaultdict(list)
-        for rec in self.records:
-            feature: SeqFeature
-            for feature in rec.features:
-                # Ignore feature if parsing of location fails
-                if feature.location is None:
-                    continue
-                # Filter feature by type & strand
-                strand = feature.location.strand
-                if feature_type is not None and feature.type not in feature_type:
-                    continue
-                if target_strand is not None and strand != target_strand:
-                    continue
-                # Exclude feature which straddle genome start position
-                if self._is_straddle_feature(feature):
-                    continue
-                start = int(feature.location.start)  # type: ignore
-                end = int(feature.location.end)  # type: ignore
-                seqid2features[rec.id].append(
-                    SeqFeature(
-                        location=SimpleLocation(start, end, strand),
-                        type=feature.type,
-                        qualifiers=feature.qualifiers,
-                    ),
-                )
-        return seqid2features
+        pass
 
     def extract_features(
         self,
@@ -310,18 +231,7 @@ class Genbank:
         features : list[SeqFeature]
             Extracted features
         """
-        seqid2features = self.get_seqid2features(feature_type, target_strand)
-        first_record_features = list(seqid2features.values())[0]
-        if target_range:
-            target_features = []
-            for feature in first_record_features:
-                start = int(feature.location.start)  # type: ignore
-                end = int(feature.location.end)  # type: ignore
-                if min(target_range) <= start <= end <= max(target_range):
-                    target_features.append(feature)
-            return target_features
-        else:
-            return first_record_features
+        pass
 
     def write_cds_fasta(self, outfile: str | Path) -> None:
         """Write CDS fasta file
@@ -331,34 +241,7 @@ class Genbank:
         outfile : str | Path
             Output CDS fasta file
         """
-        cds_records: list[SeqRecord] = []
-        counter = 0
-        seqid2cds_features = self.get_seqid2features(feature_type="CDS")
-        for seqid, cds_features in seqid2cds_features.items():
-            for cds_feature in cds_features:
-                # Ignore no translation feature
-                translation = cds_feature.qualifiers.get("translation", [None])[0]
-                if translation is None:
-                    continue
-                # Get feature location
-                start = int(cds_feature.location.start)  # type: ignore
-                end = int(cds_feature.location.end)  # type: ignore
-                strand = -1 if cds_feature.location.strand == -1 else 1
-                # Set feature id
-                location_id = f"|{seqid}|{start}_{end}_{strand}|"
-                protein_id = cds_feature.qualifiers.get("protein_id", [None])[0]
-                if protein_id is None:
-                    feature_id = f"GENE{counter:06d}{location_id}"
-                else:
-                    feature_id = f"GENE{counter:06d}_{protein_id}{location_id}"
-                counter += 1
-                # Add SeqRecord of CDS feature
-                seq = Seq(translation)
-                product = cds_feature.qualifiers.get("product", [""])[0]
-                seq_record = SeqRecord(seq, feature_id, description=product)
-                cds_records.append(seq_record)
-        # Write CDS file
-        SeqIO.write(cds_records, outfile, "fasta-2line")
+        pass
 
     def write_genome_fasta(self, outfile: str | Path) -> None:
         """Write genome fasta file
@@ -368,9 +251,7 @@ class Genbank:
         outfile : str | Path
             Output genome fasta file
         """
-        with open(outfile, "w", encoding="utf-8") as f:
-            for seqid, seq in self.get_seqid2seq().items():
-                f.write(f">{seqid}\n{seq}\n")
+        pass
 
     ############################################################
     # Private Method
@@ -391,24 +272,7 @@ class Genbank:
         list[SeqRecord]
             Genbank SeqRecords
         """
-        # Parse file
-        if isinstance(gbk_source, (str, Path)):
-            if Path(gbk_source).suffix == ".gz":
-                with gzip.open(gbk_source, mode="rt", encoding="utf-8") as f:
-                    return list(SeqIO.parse(f, "genbank"))
-            elif Path(gbk_source).suffix == ".bz2":
-                with bz2.open(gbk_source, mode="rt", encoding="utf-8") as f:
-                    return list(SeqIO.parse(f, "genbank"))
-            elif Path(gbk_source).suffix == ".zip":
-                with zipfile.ZipFile(gbk_source) as zip:
-                    with zip.open(zip.namelist()[0]) as f:
-                        io = TextIOWrapper(f, encoding="utf-8")
-                        return list(SeqIO.parse(io, "genbank"))
-            else:
-                with open(gbk_source, encoding="utf-8") as f:
-                    return list(SeqIO.parse(f, "genbank"))
-        # Parse TextIOWrapper
-        return list(SeqIO.parse(gbk_source, "genbank"))
+        pass
 
     def _is_straddle_feature(self, feature: SeqFeature) -> bool:
         """Check target feature straddle genome start position or not
@@ -423,14 +287,7 @@ class Genbank:
         result : bool
             Check result
         """
-        strand = feature.location.strand
-        if strand == -1:
-            start = int(feature.location.parts[-1].start)  # type: ignore
-            end = int(feature.location.parts[0].end)  # type: ignore
-        else:
-            start = int(feature.location.parts[0].start)  # type: ignore
-            end = int(feature.location.parts[-1].end)  # type: ignore
-        return True if start > end else False
+        pass
 
     def __str__(self):
         text = f"{self.name}: {len(self.records)} records\n"

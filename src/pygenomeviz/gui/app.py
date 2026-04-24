@@ -365,10 +365,7 @@ st.header("pyGenomeViz Streamlit Web Application")
 
 def layout_checkbox_on_change():
     """Layout checkbox callback"""
-    if st.session_state.layout == "wide":
-        st.session_state.layout = "centered"
-    else:
-        st.session_state.layout = "wide"
+    pass
 
 
 st.checkbox(

@@ -103,71 +103,42 @@ class FeatureTrack(Track):
     @property
     def label(self) -> str:
         """Track label (By default, `track.label` = `track.name`)"""
-        return self.name if self._label is None else self._label
+        pass
 
     @property
     def offset(self) -> int:
         """Track offset"""
-        offset = self._offset
-        if isinstance(offset, str):
-            if offset == "left":
-                return 0
-            elif offset == "center":
-                return int((max(self.xlim) - self.plot_size) / 2)
-            elif offset == "right":
-                return max(self.xlim) - self.plot_size
-            else:
-                raise ValueError(f"{offset=} is invalid!!")
-        else:
-            if not offset >= 0:
-                raise ValueError(f"offset must be greater than 0 ({offset=}).")
-            return offset
+        pass
 
     @property
     def segments(self) -> list[FeatureSegment]:
         """Segments"""
-        return self._segments
+        pass
 
     @property
     def subtracks(self) -> list[FeatureSubTrack]:
         """Subtracks"""
-        return self._subtracks
+        pass
 
     @property
     def total_seg_size(self) -> int:
         """Total segment size"""
-        return sum([seg.size for seg in self.segments])
+        pass
 
     @property
     def spaces(self) -> list[int]:
         """Spaces between segments"""
-        spaces: list[int] = []
-        if isinstance(self._space, (list, tuple)):
-            for space in self._space:
-                if 0 <= space < 1:
-                    spaces.append(int(self.max_track_total_seg_size * space))
-                else:
-                    spaces.append(int(space))
-        else:
-            for _ in range(len(self.segments) - 1):
-                if 0 <= self._space < 1:
-                    spaces.append(int(self.max_track_total_seg_size * self._space))
-                else:
-                    spaces.append(int(self._space))
-        return spaces
+        pass
 
     @property
     def max_track_total_seg_size(self) -> int:
         """Max track total segment size (Use space calculation)"""
-        if self._max_track_total_seg_size is None:
-            raise ValueError("'max_track_total_seg_size' is not defined!!")
-        else:
-            return self._max_track_total_seg_size
+        pass
 
     @property
     def plot_size(self) -> int:
         """Plot x size (`total_seg_size` + `sum(spaces)`)"""
-        return self.total_seg_size + sum(self.spaces)
+        pass
 
     ############################################################
     # Public Method
@@ -184,7 +155,7 @@ class FeatureTrack(Track):
         max_track_total_seg_size : int
             Max track total segment size
         """
-        self._max_track_total_seg_size = max_track_total_seg_size
+        pass
 
     def set_label(self, label: str) -> None:
         """Set track label (By default, `track.label` = `track.name`)
@@ -194,7 +165,7 @@ class FeatureTrack(Track):
         label : str
             Track label
         """
-        self._label = label
+        pass
 
     def set_segment_sep(
         self,
@@ -222,26 +193,7 @@ class FeatureTrack(Track):
             Text properties
             <https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.text.html>
         """
-        # Check list sep length
-        if isinstance(sep, (list, tuple)):
-            if len(sep) != len(self.spaces):
-                raise ValueError(f"{len(sep)=} is invalid!!")
-
-        # Convert bool sep to list sep
-        if isinstance(sep, bool):
-            sep = [sep] * len(self.spaces)
-
-        # Set segment separator symbol text kws
-        self._segment_sep_text_kws_list = []
-        text_kws = dict(s=symbol, size=size, color=color, **kwargs)
-        text_kws.setdefault("va", "center")
-        text_kws.setdefault("ha", "center")
-        text_kws.setdefault("weight", "ultralight")
-        for set_sep in sep:
-            if set_sep:
-                self._segment_sep_text_kws_list.append(text_kws)
-            else:
-                self._segment_sep_text_kws_list.append(None)
+        pass
 
     def add_subtrack(
         self,
@@ -266,20 +218,7 @@ class FeatureTrack(Track):
         subtrack : FeatureSubTrack
             Subtrack
         """
-        default_name = f"{self.name}_subtrack{len(self.subtracks) + 1:02d}"
-        name = default_name if name is None else name
-
-        # Check track name duplication
-        subtrack_names = [t.name for t in self.subtracks]
-        if name in subtrack_names:
-            raise ValueError(f"{name=} subtrack is already exists!!")
-
-        subtrack = FeatureSubTrack(name, ratio=self.ratio * ratio, feature_track=self)
-        subtrack.set_xlim(self.xlim)
-        subtrack.set_ylim(ylim)
-        self._subtracks.append(subtrack)
-
-        return subtrack
+        pass
 
     def get_subtrack(self, name: str | None = None) -> FeatureSubTrack:
         """Get subtrack by name
@@ -296,15 +235,7 @@ class FeatureTrack(Track):
         subtrack : FeatureSubTrack
             Target subtrack
         """
-        if len(self.subtracks) == 0:
-            raise SubTrackNotFoundError("Failed to get subtrack. No subtrack found.")
-        if name is None:
-            return self.subtracks[0]
-        else:
-            name2subtrack = {t.name: t for t in self.subtracks}
-            if name not in name2subtrack:
-                raise SubTrackNotFoundError(f"{name=} subtrack not found.")
-            return name2subtrack[name]
+        pass
 
     def get_segment(
         self,
@@ -322,13 +253,7 @@ class FeatureTrack(Track):
         segment : FeatureSegment
             Target segment
         """
-        if name is None:
-            return self.segments[0]
-        else:
-            name2segment = {seg.name: seg for seg in self.segments}
-            if name not in name2segment:
-                raise SegmentNotFoundError(f"{name=} segment not found (track_name='{self.name}').")  # fmt: skip  # noqa: E501
-            return name2segment[name]
+        pass
 
     def add_text(
         self,
@@ -366,17 +291,7 @@ class FeatureTrack(Track):
         **kwargs : dict, optional
             `segment.add_text()` method keyword arguments (e.g. `color="red", ...`)
         """
-        segment = self.get_segment(target_seg)
-        segment.add_text(
-            x,
-            text,
-            size=size,
-            vpos=vpos,
-            hpos=hpos,
-            ymargin=ymargin,
-            rotation=rotation,
-            **kwargs,
-        )
+        pass
 
     def add_sublabel(
         self,
@@ -408,15 +323,7 @@ class FeatureTrack(Track):
         **kwargs : dict, optional
             `segment.add_text()` method keyword arguments (e.g. `color="red", ...`)
         """
-        segment = self.get_segment(target_seg)
-        segment.add_sublabel(
-            text,
-            size=size,
-            pos=pos,
-            ymargin=ymargin,
-            rotation=rotation,
-            **kwargs,
-        )
+        pass
 
     def add_feature(
         self,
@@ -459,18 +366,7 @@ class FeatureTrack(Track):
             Patch properties (e.g. `fc="red", lw=0.5, hatch="//", ...`)
             <https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Patch.html>
         """
-        segment = self.get_segment(target_seg)
-        segment.add_feature(
-            start,
-            end,
-            strand,
-            plotstyle=plotstyle,
-            arrow_shaft_ratio=arrow_shaft_ratio,
-            extra_tooltip=extra_tooltip,
-            label=label,
-            text_kws=text_kws,
-            **kwargs,
-        )
+        pass
 
     def add_features(
         self,
@@ -515,18 +411,7 @@ class FeatureTrack(Track):
             Patch properties (e.g. `fc="red", lw=0.5, hatch="//", ...`)
             <https://matplotlib.org/stable/api/_as_gen/matplotlib.patches.Patch.html>
         """
-        segment = self.get_segment(target_seg)
-        segment.add_features(
-            features,
-            plotstyle=plotstyle,
-            arrow_shaft_ratio=arrow_shaft_ratio,
-            label_type=label_type,
-            label_handler=label_handler,
-            extra_tooltip=extra_tooltip,
-            ignore_outside_range=ignore_outside_range,
-            text_kws=text_kws,
-            **kwargs,
-        )
+        pass
 
     def add_exon_feature(
         self,
@@ -567,17 +452,7 @@ class FeatureTrack(Track):
             `segment.add_text()` method keyword arguments
             (e.g. `dict(size=12, color="red", ...)`)
         """
-        segment = self.get_segment(target_seg)
-        segment.add_exon_feature(
-            locs,
-            strand,
-            plotstyle=plotstyle,
-            arrow_shaft_ratio=arrow_shaft_ratio,
-            label=label,
-            patch_kws=patch_kws,
-            intron_patch_kws=intron_patch_kws,
-            text_kws=text_kws,
-        )
+        pass
 
     def add_exon_features(
         self,
@@ -626,19 +501,7 @@ class FeatureTrack(Track):
             `segment.add_text()` method keyword arguments
             (e.g. `dict(size=12, color="red", ...)`)
         """
-        segment = self.get_segment(target_seg)
-        segment.add_exon_features(
-            features,
-            plotstyle=plotstyle,
-            arrow_shaft_ratio=arrow_shaft_ratio,
-            label_type=label_type,
-            label_handler=label_handler,
-            extra_tooltip=extra_tooltip,
-            ignore_outside_range=ignore_outside_range,
-            patch_kws=patch_kws,
-            intron_patch_kws=intron_patch_kws,
-            text_kws=text_kws,
-        )
+        pass
 
     @overload
     def transform_coord(self, x: int, *, target_seg: str | None = None) -> int: ...
@@ -669,8 +532,7 @@ class FeatureTrack(Track):
         transform_x : int | float| NDArray[np.float64]
             Track-level coordinate(s)
         """
-        seg = self.get_segment(target_seg)
-        return seg.transform_coord(x)
+        pass
 
     def plot_all(self, fast_render: bool = True) -> None:
         """Plot all objects (Expected to be called in `gv.plotfig()`)
@@ -686,12 +548,7 @@ class FeatureTrack(Track):
         fast_render : bool, optional
             Enable fast rendering using PatchCollection plot style.
         """
-        self._plot_track_label()
-        self._plot_segment_lines()
-        self._plot_segment_sep()
-        self._plot_features(fast_render)
-        self._plot_exon_features(fast_render)
-        self._plot_texts()
+        pass
 
     ############################################################
     # Private Method
@@ -699,39 +556,15 @@ class FeatureTrack(Track):
 
     def _plot_track_label(self) -> None:
         """Plot track label"""
-        # Calculate track label position
-        if self._align_label:
-            x, y = -self._labelmargin, 0.5
-        else:
-            first_seg_start_x = self.segments[0].track_start / self.xlim[1]
-            x, y = first_seg_start_x - self._labelmargin, 0.5
-
-        # Plot track label
-        self._label_kws.update(
-            ha="right",
-            va="center_baseline",
-            fontsize=self._labelsize,
-            transform=self.ax.transAxes,
-        )
-        self.ax.text(x, y, self.label, **self._label_kws)
+        pass
 
     def _plot_segment_lines(self) -> None:
         """Plot lines for each segment"""
-        for seg in self.segments:
-            x, y = (seg.track_start, seg.track_end), (0, 0)
-            self.ax.plot(x, y, **self._line_kws)
+        pass
 
     def _plot_segment_sep(self) -> None:
         """Plot break symbol for each segment"""
-        if len(self._segment_sep_text_kws_list) == 0:
-            return
-        pos = self.offset
-        for idx, space in enumerate(self.spaces):
-            target_pos = pos + self.segments[idx].size + (space / 2)
-            seg_sep_text_kws = self._segment_sep_text_kws_list[idx]
-            if seg_sep_text_kws is not None:
-                self.ax.text(target_pos, 0, **seg_sep_text_kws)
-            pos += self.segments[idx].size + space
+        pass
 
     def _plot_features(
         self,
@@ -744,25 +577,7 @@ class FeatureTrack(Track):
         fast_render : bool, optional
             Enable fast rendering using PatchCollection plot style.
         """
-        # Collect feature patches
-        patches: list[Patch] = []
-        for seg in self.segments:
-            for f in seg.transform_features:
-                start = int(f.location.parts[0].start)  # type: ignore
-                end = int(f.location.parts[-1].end)  # type: ignore
-                strand = -1 if f.location.strand == -1 else 1
-                plotstyle = str(f.qualifiers["plotstyle"])
-                arrow_shaft_ratio = float(f.qualifiers["arrow_shaft_ratio"])
-                patch_kws = dict(f.qualifiers["patch_kws"])
-                if "arrow" in plotstyle or "rbox" in plotstyle:
-                    patch_kws.update(max_size=self.xlim[1])
-                if "arrow" in plotstyle:
-                    patch_kws.update(shaft_ratio=arrow_shaft_ratio)
-
-                PlotPatch = PLOTSTYLE2PATCH[plotstyle]
-                patches.append(PlotPatch(start, end, strand, **patch_kws))
-
-        plot_patches(patches, self.ax, fast_render)
+        pass
 
     def _plot_exon_features(
         self,
@@ -775,53 +590,11 @@ class FeatureTrack(Track):
         fast_render : bool, optional
             Enable fast rendering using PatchCollection plot style.
         """
-        # Collect feature patches
-        patches: list[Patch] = []
-        for seg in self.segments:
-            for f in seg.transform_exon_features:
-                exon_locs, intron_locs = self._extract_exon_intron_locs(f)
-                plotstyle = str(f.qualifiers["plotstyle"])
-                arrow_shaft_ratio = float(f.qualifiers["arrow_shaft_ratio"])
-                patch_kws = dict(f.qualifiers["patch_kws"])
-
-                # Plot exon patches
-                strand = -1 if f.location.strand == -1 else 1
-                exon_locs = exon_locs[::-1] if strand == -1 else exon_locs
-                for idx, exon_loc in enumerate(exon_locs, 1):
-                    exon_start, exon_end = exon_loc
-                    if "arrow" in plotstyle or "rbox" in plotstyle:
-                        patch_kws.update(max_size=self.xlim[1])
-                    if "arrow" in plotstyle:
-                        patch_kws.update(shaft_ratio=arrow_shaft_ratio)
-                        if idx == len(exon_locs):
-                            patch_kws.update(show_head=True)
-                        else:
-                            patch_kws.update(show_head=False)
-                    Patch = PLOTSTYLE2PATCH[plotstyle]
-                    patches.append(Patch(exon_start, exon_end, strand, **patch_kws))
-
-                # Plot intron patches
-                intron_patch_kws = dict(f.qualifiers["intron_patch_kws"])
-                for intron_loc in intron_locs:
-                    intron_start, intron_end = intron_loc
-                    bigstyle = "big" in plotstyle
-                    patches.append(
-                        Intron(
-                            intron_start,
-                            intron_end,
-                            strand,
-                            bigstyle=bigstyle,
-                            **intron_patch_kws,
-                        )
-                    )
-
-        plot_patches(patches, self.ax, fast_render)
+        pass
 
     def _plot_texts(self) -> None:
         """Plot texts"""
-        for seg in self.segments:
-            for text_kws in seg.transform_text_kws_list:
-                self.ax.text(**text_kws)
+        pass
 
     def _extract_exon_intron_locs(
         self,
@@ -841,18 +614,7 @@ class FeatureTrack(Track):
         intron_locs : list[tuple[int, int]]
             Intron locations
         """
-        exon_locs: list[tuple[int, int]] = []
-        intron_locs: list[tuple[int, int]] = []
-        # Extract exon locations
-        for loc in feature.location.parts:
-            exon_start, exon_end = int(loc.start), int(loc.end)  # type: ignore
-            exon_locs.append((exon_start, exon_end))
-        # Extract intron locations
-        for i in range(len(exon_locs) - 1):
-            intron_start, intron_end = exon_locs[i][1], exon_locs[i + 1][0]
-            intron_locs.append((intron_start, intron_end))
-
-        return exon_locs, intron_locs
+        pass
 
     def __str__(self):
         track_segments = {seg.name: (seg.start, seg.end) for seg in self.segments}
@@ -894,8 +656,8 @@ class FeatureSubTrack(Track):
     @property
     def feature_track(self) -> FeatureTrack:
         """Parent feature track to which subtrack belongs"""
-        return self._feature_track
+        pass
 
     def set_ylim(self, ylim: tuple[float, float]) -> None:
         """Set track ylim"""
-        self._ylim = ylim
+        pass

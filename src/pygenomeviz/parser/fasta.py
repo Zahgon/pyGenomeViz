@@ -51,32 +51,32 @@ class Fasta:
     @property
     def name(self) -> str:
         """Name"""
-        return self._name
+        pass
 
     @property
     def records(self) -> list[SeqRecord]:
         """Fasta records"""
-        return self._records
+        pass
 
     @property
     def genome_seq(self) -> str:
         """Genome sequence (only first record)"""
-        return str(self.records[0].seq)
+        pass
 
     @property
     def genome_length(self) -> int:
         """Genome length (only first record)"""
-        return len(self.genome_seq)
+        pass
 
     @property
     def full_genome_seq(self) -> str:
         """Full genome sequence (concatenate all records)"""
-        return "".join(str(r.seq) for r in self.records)
+        pass
 
     @property
     def full_genome_length(self) -> int:
         """Full genome length (concatenate all records)"""
-        return len(self.full_genome_seq)
+        pass
 
     ############################################################
     # Public Method
@@ -90,7 +90,7 @@ class Fasta:
         seqid2seq : dict[str, str]
             seqid & genome sequence dict
         """
-        return {str(rec.id): str(rec.seq) for rec in self.records}
+        pass
 
     def get_seqid2size(self) -> dict[str, int]:
         """Get seqid & complete/contig/scaffold genome size dict
@@ -100,7 +100,7 @@ class Fasta:
         seqid2size : dict[str, int]
             seqid & genome size dict
         """
-        return {seqid: len(seq) for seqid, seq in self.get_seqid2seq().items()}
+        pass
 
     def get_seqid2record(self) -> dict[str, SeqRecord]:
         """Get seqid & complete/contig/scaffold genome record dict
@@ -110,7 +110,7 @@ class Fasta:
         seqid2record : dict[str, SeqRecord]
             seqi & genome record dict
         """
-        return {str(rec.id): rec for rec in self.records}
+        pass
 
     def write_genome_fasta(self, outfile: str | Path) -> None:
         """Write genome fasta file
@@ -120,9 +120,7 @@ class Fasta:
         outfile : str | Path
             Output genome fasta file
         """
-        with open(outfile, "w", encoding="utf-8") as f:
-            for seqid, seq in self.get_seqid2seq().items():
-                f.write(f">{seqid}\n{seq}\n")
+        pass
 
     ############################################################
     # Private Method
@@ -141,17 +139,4 @@ class Fasta:
         seq_records : list[SeqRecord]
             SeqRecord list
         """
-        if Path(fasta_file).suffix == ".gz":
-            with gzip.open(fasta_file, mode="rt", encoding="utf-8") as f:
-                return list(SeqIO.parse(f, "fasta"))
-        elif Path(fasta_file).suffix == ".bz2":
-            with bz2.open(fasta_file, mode="rt", encoding="utf-8") as f:
-                return list(SeqIO.parse(f, "fasta"))
-        elif Path(fasta_file).suffix == ".zip":
-            with zipfile.ZipFile(fasta_file) as zip:
-                with zip.open(zip.namelist()[0]) as f:
-                    io = TextIOWrapper(f, encoding="utf-8")
-                    return list(SeqIO.parse(io, "fasta"))
-        else:
-            with open(fasta_file, encoding="utf-8") as f:
-                return list(SeqIO.parse(f, "fasta"))
+        pass

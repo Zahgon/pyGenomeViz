@@ -27,29 +27,27 @@ class Track:
     @property
     def name(self) -> str:
         """Track name"""
-        return self._name
+        pass
 
     @property
     def ratio(self) -> float:
         """Track size ratio"""
-        return self._ratio
+        pass
 
     @property
     def zorder(self) -> float:
         """Track zorder"""
-        return self._zorder
+        pass
 
     @property
     def xlim(self) -> tuple[int, int]:
         """Track axes x min-max tuple"""
-        if self._xlim is None:
-            raise ValueError("'xlim' is not defined!!")
-        return self._xlim
+        pass
 
     @property
     def ylim(self) -> tuple[float, float]:
         """Track axes y min-max tuple"""
-        return self._ylim
+        pass
 
     @property
     def ax(self) -> Axes:
@@ -62,9 +60,7 @@ class Track:
         ax : Axes
             Matplotlib axes
         """
-        if self._ax is None:
-            raise ValueError("Can't access ax property before calling 'plotfig' method.")  # fmt: skip  # noqa: E501
-        return self._ax
+        pass
 
     ############################################################
     # Public Method
@@ -72,13 +68,11 @@ class Track:
 
     def set_ratio(self, ratio: float) -> None:
         """Set track size ratio"""
-        if ratio < 0:
-            raise ValueError(f"{ratio=} is invalid (Must be 'ratio >= 0').")
-        self._ratio = ratio
+        pass
 
     def set_xlim(self, xlim: tuple[int, int]) -> None:
         """Set track xlim"""
-        self._xlim = xlim
+        pass
 
     def set_ax(self, ax: Axes, show_axis: bool = False) -> None:
         """Set track axes
@@ -90,8 +84,7 @@ class Track:
         show_axis : bool, optional
             Show axis for debug purpose
         """
-        self._initalize_axes(ax, show_axis)
-        self._ax = ax
+        pass
 
     ############################################################
     # Private Method
@@ -107,15 +100,4 @@ class Track:
         show_axis : bool, optional
             Show axis for debug purpose
         """
-        # Set spines visibility
-        for pos in ("left", "right", "top", "bottom"):
-            ax.spines[pos].set_visible(show_axis)
-        # Set ticks visibility
-        ax.tick_params(left=False, labelleft=False, bottom=False, labelbottom=False)
-        # Set zorder
-        ax.set_zorder(self.zorder)
-        # Set xlim
-        ax.set_xlim(self.xlim)
-        ax.set_ylim(*self.ylim)
-        # Set facecolor to transparent
-        ax.set_facecolor("none")
+        pass
